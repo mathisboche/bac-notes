@@ -1,38 +1,285 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #34495e;
+    --background-color: #ecf0f1;
+    --card-background: #ffffff;
+    --text-color: #333333;
+    --border-color: #bdc3c7;
+    --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
   }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
   }
-  to {
-    transform: rotate(360deg);
+  
+  body {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--background-color);
   }
-}
+
+  .App {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+  
+  .app-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+  
+  h1 {
+    color: var(--primary-color);
+    font-size: 2.5em;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+  }
+  
+  .app-main {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  
+  .grades-container {
+    display: flex;
+    gap: 40px;
+  }
+  
+  .grades-column {
+    flex: 1;
+    background-color: var(--card-background);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+  }
+
+  .grades-column:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .column-title {
+    font-size: 1.8em;
+    color: var(--primary-color);
+    margin-bottom: 30px;
+    text-align: center;
+    font-weight: 600;
+  }
+  
+  .column-subtitle {
+    font-size: 1.4em;
+    color: var(--secondary-color);
+    margin: 30px 0 20px;
+    text-align: center;
+    font-weight: 500;
+  }
+  
+  .subject-card {
+    background-color: var(--background-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: var(--transition);
+  }
+  
+  .subject-card:hover {
+    box-shadow: var(--shadow);
+  }
+  
+  .subject-title {
+    font-size: 1.2em;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  
+  .trimester-inputs, .final-input {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .trimester-input, .final-input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    transition: var(--transition);
+  }
+  
+  .trimester-input:focus, .final-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.1);
+  }
+  
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9em;
+    color: var(--text-color);
+  }
+  
+  .calculate-button {
+    align-self: center;
+    padding: 14px 36px;
+    font-size: 1.1em;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: var(--transition);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+  
+  .calculate-button:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .results-container {
+    background-color: var(--card-background);
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+  }
+
+  .results-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .results-title {
+    font-size: 2em;
+    color: var(--primary-color);
+    margin-bottom: 30px;
+    text-align: center;
+    font-weight: 600;
+  }
+  
+  .final-grade {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: var(--background-color);
+    border-radius: 10px;
+  }
+  
+  .final-grade .label {
+    font-size: 1.2em;
+  }
+  
+  .final-grade .value {
+    font-size: 2.2em;
+    font-weight: 700;  
+    color: var(--primary-color);
+  }
+  
+  .grade-scale-container {
+    margin: 30px 0;
+  }
+  
+  .grade-scale {
+    height: 20px;
+    background: linear-gradient(to right, #ff4136, #ff851b, #ffdc00, #2ecc40, #3498db);
+    border-radius: 10px;
+    position: relative;
+  }
+  
+  .grade-marker {
+    position: absolute;
+    top: -10px;
+    width: 2px;
+    height: 40px;
+    background-color: var(--text-color);
+  }
+  
+  .grade-label {
+    position: absolute;
+    bottom: -25px;
+    transform: translateX(-50%);
+    font-size: 0.9em;
+    white-space: nowrap;
+  }
+  
+  #grade-indicator {
+    position: absolute;
+    top: -5px;
+    width: 30px;
+    height: 30px;
+    background-color: white;
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+    transform: translateX(-50%);
+    transition: left 0.5s ease;
+  }
+  
+  .coeffs-info {
+    margin-top: 50px;
+  }
+  
+  .coeffs-text {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  .coeffs-diagram {
+    height: 20px;
+    background-color: var(--background-color);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .filled-coeffs {
+    height: 100%;
+    background-color: var(--secondary-color);
+    transition: width 0.5s ease;
+  }
+  
+  .required-average {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: var(--background-color);
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .required-average .label {
+    font-size: 1.1em;
+  }
+  
+  .required-average .value {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: var(--primary-color);
+  }
+  
+  @media (max-width: 768px) {
+    .grades-container {
+      flex-direction: column;
+    }
+  
+    .final-grade, .required-average {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .final-grade .value, .required-average .value {
+      margin-top: 10px;
+    }
+  }
