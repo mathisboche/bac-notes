@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import './App.css';
 
 function App() {
@@ -9,8 +8,6 @@ function App() {
   const [filledCoeffs, setFilledCoeffs] = useState(0);
   const [totalCoeffs, setTotalCoeffs] = useState(0);
   const [requiredAverage, setRequiredAverage] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showLoginForm, setShowLoginForm] = useState(false);
 
   const coeffs = {
     'premiere_anglais': 3,
@@ -34,24 +31,14 @@ function App() {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setIsLoggedIn(true);
-      fetchFormData(token);
-    } else {
-      const localFormData = localStorage.getItem('formData');
-      if (localFormData) {
-        setFormData(JSON.parse(localFormData));
-      }
+    const localFormData = localStorage.getItem('formData');
+    if (localFormData) {
+      setFormData(JSON.parse(localFormData));
     }
   }, []);
 
   useEffect(() => {
-    if (isLoggedIn) {
-      saveFormData();
-    } else {
-      localStorage.setItem('formData', JSON.stringify(formData));
-    }
+    localStorage.setItem('formData', JSON.stringify(formData));
     
     const newGrade = calculateCurrentGrade();
     setCurrentGrade(newGrade);
@@ -59,38 +46,6 @@ function App() {
     const newRequiredAverage = calculateRequiredAverage(newGrade);
     setRequiredAverage(newRequiredAverage);
   }, [formData]);
-
-  const fetchFormData = async (token) => {
-    try {
-      const response = await axios.get('/api/formData', {
-        headers: { Authorization: token }
-      });
-      setFormData(response.data.formData);
-    } catch (error) {
-      console.error('Error fetching form data:', error);
-    }
-  };
-
-  const saveFormData = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      await axios.post('/api/save', { formData }, {
-        headers: { Authorization: token }
-      });
-    } catch (error) {
-      console.error('Error saving form data:', error);
-    }
-  };
-
-  const handleLoginClick = () => {
-    setShowLoginForm(!showLoginForm);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    setIsLoggedIn(false);
-    setShowLoginForm(false);
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -156,14 +111,8 @@ function App() {
     <div className="App">
       <header className="app-header">
         <h1>Calculateur de Note du BAC</h1>
-        <button onClick={isLoggedIn ? handleLogout : handleLoginClick}>
-          {isLoggedIn ? 'Logout' : 'Login'}
-        </button>
       </header>
       <main className="app-main">
-        {showLoginForm && !isLoggedIn && (
-          <LoginForm setIsLoggedIn={setIsLoggedIn} setShowLoginForm={setShowLoginForm} setFormData={setFormData} />
-        )}
         <div className="grades-container">
           <div className="grades-column">
             <h2 className="column-title">Première</h2>
@@ -220,57 +169,6 @@ function App() {
           </div>
         </div>
       </main>
-    </div>
-  );
-}
-
-function LoginForm({ setIsLoggedIn, setShowLoginForm, setFormData }) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post('/api/login', { username, password });
-      localStorage.setItem('token', response.data.token);
-      setIsLoggedIn(true);
-      setFormData(response.data.formData);
-      setShowLoginForm(false);
-    } catch (error) {
-      setError('Login failed. Please check your credentials.');
-    }
-  };
-
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post('/api/register', { username, password });
-      alert('User registered successfully. Please log in.');
-    } catch (error) {
-      setError('Registration failed. Please try again.');
-    }
-  };
-
-  return (
-    <div className="login-form">
-      {error && <div className="error-message">{error}</div>}
-      <form onSubmit={handleLogin}>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="submit">Login</button>
-      </form>
-      <button onClick={handleRegister}>Register</button>
     </div>
   );
 }
