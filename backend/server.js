@@ -1,100 +1,99 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const mongoose = require('mongoose');
+const faunadb = require('faunadb')
+const q = faunadb.query
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+require('dotenv').config()
 
-const app = express();
-const PORT = process.env.PORT || 5000;
+const client = new faunadb.Client({ secret: process.env.FAUNADB_SECRET })
 
-app.use(cors());
-app.use(bodyParser.json());
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost/bac_calculator', { useNewUrlParser: true, useUnifiedTopology: true });
+module.exports = async (req, res) => {
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end()
+  }
 
-// User Schema
-const UserSchema = new mongoose.Schema({
-  username: String,
-  password: String,
-  formData: Object
-});
+  const path = req.url.split('/')[1]
 
-const User = mongoose.model('User', UserSchema);
+  switch (path) {
+    case 'register':
+      return handleRegister(req, res)
+    case 'login':
+      return handleLogin(req, res)
+    case 'formData':
+      return handleFormData(req, res)
+    case 'save':
+      return handleSave(req, res)
+    default:
+      return res.status(404).send('Not found')
+  }
+}
 
-// JWT Secret
-const JWT_SECRET = 'your-secret-key';
-
-// Middleware to verify JWT
-const verifyToken = (req, res, next) => {
-  const token = req.headers['authorization'];
-  if (!token) return res.status(403).send({ auth: false, message: 'No token provided.' });
-  
-  jwt.verify(token, JWT_SECRET, (err, decoded) => {
-    if (err) return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
+async function handleRegister(req, res) {
+  try {
+    const { username, password } = req.body
+    const hashedPassword = await bcrypt.hash(password, 10)
     
-    req.userId = decoded.id;
-    next();
-  });
-};
-
-// Register route
-app.post('/register', async (req, res) => {
-  try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const user = new User({
-      username: req.body.username,
-      password: hashedPassword,
-      formData: {}
-    });
-    await user.save();
-    res.status(201).send({ message: 'User registered successfully' });
+    await client.query(
+      q.Create(
+        q.Collection('users'),
+        { data: { username, password: hashedPassword, formData: {} } }
+      )
+    )
+    
+    res.status(201).json({ message: 'User registered successfully' })
   } catch (error) {
-    res.status(500).send({ message: 'Error registering user' });
+    res.status(500).json({ message: 'Error registering user' })
   }
-});
+}
 
-// Login route
-app.post('/login', async (req, res) => {
+async function handleLogin(req, res) {
   try {
-    const user = await User.findOne({ username: req.body.username });
-    if (!user) return res.status(404).send({ message: 'User not found' });
+    const { username, password } = req.body
+    
+    const user = await client.query(
+      q.Get(q.Match(q.Index('users_by_username'), username))
+    )
+    
+    const validPassword = await bcrypt.compare(password, user.data.password)
+    if (!validPassword) return res.status(401).json({ message: 'Invalid password' })
 
-    const validPassword = await bcrypt.compare(req.body.password, user.password);
-    if (!validPassword) return res.status(401).send({ message: 'Invalid password' });
-
-    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: 86400 }); // 24 hours
-    res.status(200).send({ auth: true, token: token, formData: user.formData });
+    const token = jwt.sign({ id: user.ref.id }, JWT_SECRET, { expiresIn: '24h' })
+    res.status(200).json({ auth: true, token, formData: user.data.formData })
   } catch (error) {
-    res.status(500).send({ message: 'Error logging in' });
+    res.status(500).json({ message: 'Error logging in' })
   }
-});
+}
 
-// Get form data route
-app.get('/formData', verifyToken, async (req, res) => {
+async function handleFormData(req, res) {
   try {
-    const user = await User.findById(req.userId);
-    if (!user) return res.status(404).send({ message: 'User not found' });
-
-    res.status(200).send({ formData: user.formData });
+    const token = req.headers['authorization']
+    if (!token) return res.status(403).json({ auth: false, message: 'No token provided.' })
+    
+    const decoded = jwt.verify(token, JWT_SECRET)
+    const user = await client.query(q.Get(q.Ref(q.Collection('users'), decoded.id)))
+    
+    res.status(200).json({ formData: user.data.formData })
   } catch (error) {
-    res.status(500).send({ message: 'Error fetching form data' });
+    res.status(500).json({ message: 'Error fetching form data' })
   }
-});
+}
 
-// Save form data route
-app.post('/save', verifyToken, async (req, res) => {
+async function handleSave(req, res) {
   try {
-    const user = await User.findByIdAndUpdate(req.userId, { formData: req.body.formData }, { new: true });
-    if (!user) return res.status(404).send({ message: 'User not found' });
-
-    res.status(200).send({ message: 'Form data saved successfully' });
+    const token = req.headers['authorization']
+    if (!token) return res.status(403).json({ auth: false, message: 'No token provided.' })
+    
+    const decoded = jwt.verify(token, JWT_SECRET)
+    await client.query(
+      q.Update(
+        q.Ref(q.Collection('users'), decoded.id),
+        { data: { formData: req.body.formData } }
+      )
+    )
+    
+    res.status(200).json({ message: 'Form data saved successfully' })
   } catch (error) {
-    res.status(500).send({ message: 'Error saving form data' });
+    res.status(500).json({ message: 'Error saving form data' })
   }
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+}
