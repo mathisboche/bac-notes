@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './App.css';
 
 function App() {
@@ -8,6 +9,9 @@ function App() {
   const [filledCoeffs, setFilledCoeffs] = useState(0);
   const [totalCoeffs, setTotalCoeffs] = useState(0);
   const [requiredAverage, setRequiredAverage] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   const coeffs = {
     'premiere_anglais': 3,
@@ -31,21 +35,74 @@ function App() {
   };
 
   useEffect(() => {
-    const savedFormData = localStorage.getItem('bacCalculatorFormData');
-    if (savedFormData) {
-      setFormData(JSON.parse(savedFormData));
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsLoggedIn(true);
+      fetchFormData(token);
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('bacCalculatorFormData', JSON.stringify(formData));
-
+    if (isLoggedIn) {
+      saveFormData();
+    }
+    
     const newGrade = calculateCurrentGrade();
     setCurrentGrade(newGrade);
     updateGradeIndicator(newGrade);
     const newRequiredAverage = calculateRequiredAverage(newGrade);
     setRequiredAverage(newRequiredAverage);
   }, [formData]);
+
+  const fetchFormData = async (token) => {
+    try {
+      const response = await axios.get('http://localhost:5000/formData', {
+        headers: { Authorization: token }
+      });
+      setFormData(response.data.formData);
+    } catch (error) {
+      console.error('Error fetching form data:', error);
+    }
+  };
+
+  const saveFormData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post('http://localhost:5000/save', { formData }, {
+        headers: { Authorization: token }
+      });
+    } catch (error) {
+      console.error('Error saving form data:', error);
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:5000/login', { username, password });
+      localStorage.setItem('token', response.data.token);
+      setIsLoggedIn(true);
+      setFormData(response.data.formData);
+    } catch (error) {
+      console.error('Error logging in:', error);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+    setFormData({});
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('http://localhost:5000/register', { username, password });
+      alert('User registered successfully. Please log in.');
+    } catch (error) {
+      console.error('Error registering:', error);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -107,10 +164,53 @@ function App() {
     }
   };
 
+  if (!isLoggedIn) {
+    return (
+      <div className="App">
+        <header className="app-header">
+          <h1>Calculateur de Note du BAC</h1>
+        </header>
+        <main className="app-main">
+          <form onSubmit={handleLogin}>
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button type="submit">Login</button>
+          </form>
+          <form onSubmit={handleRegister}>
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button type="submit">Register</button>
+          </form>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="App">
       <header className="app-header">
         <h1>Calculateur de Note du BAC</h1>
+        <button onClick={handleLogout}>Logout</button>
       </header>
       <main className="app-main">
         <div className="grades-container">
