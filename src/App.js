@@ -10,8 +10,7 @@ function App() {
   const [totalCoeffs, setTotalCoeffs] = useState(0);
   const [requiredAverage, setRequiredAverage] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [showLoginForm, setShowLoginForm] = useState(false);
 
   const coeffs = {
     'premiere_anglais': 3,
@@ -39,12 +38,19 @@ function App() {
     if (token) {
       setIsLoggedIn(true);
       fetchFormData(token);
+    } else {
+      const localFormData = localStorage.getItem('formData');
+      if (localFormData) {
+        setFormData(JSON.parse(localFormData));
+      }
     }
   }, []);
 
   useEffect(() => {
     if (isLoggedIn) {
       saveFormData();
+    } else {
+      localStorage.setItem('formData', JSON.stringify(formData));
     }
     
     const newGrade = calculateCurrentGrade();
@@ -76,32 +82,14 @@ function App() {
     }
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:5000/login', { username, password });
-      localStorage.setItem('token', response.data.token);
-      setIsLoggedIn(true);
-      setFormData(response.data.formData);
-    } catch (error) {
-      console.error('Error logging in:', error);
-    }
+  const handleLoginClick = () => {
+    setShowLoginForm(!showLoginForm);
   };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
-    setFormData({});
-  };
-
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post('http://localhost:5000/register', { username, password });
-      alert('User registered successfully. Please log in.');
-    } catch (error) {
-      console.error('Error registering:', error);
-    }
+    setShowLoginForm(false);
   };
 
   const handleChange = (e) => {
@@ -164,55 +152,18 @@ function App() {
     }
   };
 
-  if (!isLoggedIn) {
-    return (
-      <div className="App">
-        <header className="app-header">
-          <h1>Calculateur de Note du BAC</h1>
-        </header>
-        <main className="app-main">
-          <form onSubmit={handleLogin}>
-            <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <button type="submit">Login</button>
-          </form>
-          <form onSubmit={handleRegister}>
-            <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <button type="submit">Register</button>
-          </form>
-        </main>
-      </div>
-    );
-  }
-
   return (
     <div className="App">
       <header className="app-header">
         <h1>Calculateur de Note du BAC</h1>
-        <button onClick={handleLogout}>Logout</button>
+        <button onClick={isLoggedIn ? handleLogout : handleLoginClick}>
+          {isLoggedIn ? 'Logout' : 'Login'}
+        </button>
       </header>
       <main className="app-main">
+        {showLoginForm && !isLoggedIn && (
+          <LoginForm setIsLoggedIn={setIsLoggedIn} setShowLoginForm={setShowLoginForm} setFormData={setFormData} />
+        )}
         <div className="grades-container">
           <div className="grades-column">
             <h2 className="column-title">Première</h2>
@@ -269,6 +220,57 @@ function App() {
           </div>
         </div>
       </main>
+    </div>
+  );
+}
+
+function LoginForm({ setIsLoggedIn, setShowLoginForm, setFormData }) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:5000/login', { username, password });
+      localStorage.setItem('token', response.data.token);
+      setIsLoggedIn(true);
+      setFormData(response.data.formData);
+      setShowLoginForm(false);
+    } catch (error) {
+      setError('Login failed. Please check your credentials.');
+    }
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('http://localhost:5000/register', { username, password });
+      alert('User registered successfully. Please log in.');
+    } catch (error) {
+      setError('Registration failed. Please try again.');
+    }
+  };
+
+  return (
+    <div className="login-form">
+      {error && <div className="error-message">{error}</div>}
+      <form onSubmit={handleLogin}>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button type="submit">Login</button>
+      </form>
+      <button onClick={handleRegister}>Register</button>
     </div>
   );
 }
