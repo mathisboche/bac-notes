@@ -31,7 +31,6 @@ function App() {
   };
 
   useEffect(() => {
-    // Charger les données sauvegardées au chargement de la page
     const savedFormData = localStorage.getItem('bacCalculatorFormData');
     if (savedFormData) {
       setFormData(JSON.parse(savedFormData));
@@ -39,7 +38,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // Sauvegarder les données dans le localStorage à chaque modification
     localStorage.setItem('bacCalculatorFormData', JSON.stringify(formData));
 
     const newGrade = calculateCurrentGrade();
@@ -70,9 +68,10 @@ function App() {
     for (const [subject, coeff] of Object.entries(coeffs)) {
       let grade;
       if (subject.startsWith('premiere_') || subject.startsWith('terminale_')) {
-        grade = calculateAverage([formData[`${subject}_t1`], formData[`${subject}_t2`], formData[`${subject}_t3`]]);
+        const trimesterGrades = [formData[`${subject}_t1`], formData[`${subject}_t2`], formData[`${subject}_t3`]];
+        grade = calculateAverage(trimesterGrades);
       } else {
-        grade = formData[subject];
+        grade = formData[subject] !== '' ? formData[subject] : null;
       }
 
       if (grade !== null && !isNaN(grade)) {
@@ -175,9 +174,17 @@ function App() {
 }
 
 function SubjectCard({ subject, coeff, formData, handleChange, isFinal = false, calculateAverage }) {
-  const average = isFinal 
-    ? formData[subject] || '-'
-    : calculateAverage([formData[`${subject}_t1`], formData[`${subject}_t2`], formData[`${subject}_t3`]]);
+  const getAverage = () => {
+    if (isFinal) {
+      return formData[subject] !== '' ? formData[subject] : '-';
+    } else {
+      const trimesterGrades = [formData[`${subject}_t1`], formData[`${subject}_t2`], formData[`${subject}_t3`]];
+      const average = calculateAverage(trimesterGrades);
+      return average !== null ? average : '-';
+    }
+  };
+
+  const average = getAverage();
 
   return (
     <div className="subject-card">
