@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(cors());
 
 // Connect to MongoDB
-mongoose.connect('mongodb://adminUser:Mathis_76@localhost/bac-calculator', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://mathisboche:Mathis_76@localhost/bac-calculator', { useNewUrlParser: true, useUnifiedTopology: true });
 
 // User model
 const User = mongoose.model('User', {
@@ -46,7 +46,7 @@ app.post('/login', async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
-    const token = jwt.sign({ id: user._id }, 'your_jwt_secret', { expiresIn: '1h' });
+    const token = jwt.sign({ id: user._id }, 'votre_clé_secrète_très_longue_et_complexe', { expiresIn: '1h' });
     res.json({ token, formData: user.formData });
   } catch (error) {
     res.status(500).json({ message: 'Error logging in' });
@@ -58,7 +58,7 @@ const verifyToken = (req, res, next) => {
   const token = req.header('Authorization');
   if (!token) return res.status(401).json({ message: 'Access denied' });
   try {
-    const verified = jwt.verify(token, 'your_jwt_secret');
+    const verified = jwt.verify(token, 'votre_clé_secrète_très_longue_et_complexe');
     req.userId = verified.id;
     next();
   } catch (error) {
