@@ -169,6 +169,9 @@ function App() {
           </div>
         </div>
       </main>
+      <footer className="app-footer">
+        <p>Réalisé par <a href="https://github.com/mathisboche" target="_blank" rel="noopener noreferrer">Mathis Boche</a></p>
+      </footer>
     </div>
   );
 }
