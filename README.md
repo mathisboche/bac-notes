@@ -1,70 +1,47 @@
-# Getting Started with Create React App
+# Calculateur de Moyenne BAC Général – Application Web
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Cette application web vous permet de **calculer facilement vos moyennes et votre résultat final au Baccalauréat général**. L’outil prend en compte toutes les matières, les coefficients officiels du BAC général, et la distinction entre contrôle continu et épreuves terminales.
 
-## Available Scripts
+## ✨ Fonctionnalités
 
-In the project directory, you can run:
+* **Saisie simple** des notes pour chaque matière (spécialités, tronc commun, options, etc.)
+* **Calcul automatique** de la moyenne générale selon les coefficients du BAC général (applicables à partir de la réforme 2021)
+* **Affichage clair et interactif** : barres de progression, indicateurs colorés, visualisation de la moyenne requise, etc.
+* **Design moderne et responsive** : utilisable sur PC, tablette, smartphone
+* **Respect total de la confidentialité** : aucune donnée transmise ni sauvegardée en ligne
 
-### `npm start`
+## 🛠️ Technologies utilisées
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+* **Frontend** : HTML + CSS pur (design sur-mesure, variables CSS pour personnalisation)
+* **Typographie** : [Inter](https://fonts.google.com/specimen/Inter)
+* **Aucune dépendance externe**
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🚀 Utilisation
 
-### `npm test`
+1. **Cloner le dépôt** :
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+   ```bash
+   git clone https://github.com/votre-utilisateur/nom-du-repo.git
+   ```
+2. **Ouvrir `index.html`** dans votre navigateur
 
-### `npm run build`
+Aucune installation nécessaire, tout fonctionne en local.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 🔒 Confidentialité
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Aucune note ou information personnelle n’est stockée, transmise ou sauvegardée :
+**tout reste sur votre appareil**.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 📄 Disclaimer
 
-### `npm run eject`
+> Cette application fournit une **estimation indicative** de votre résultat au BAC général, basée sur les coefficients et règles en vigueur.
+> Elle n’a aucune valeur officielle auprès de l’Éducation nationale.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 👤 Auteur
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Développé par Mathis Boche
+Contact : [mathisboche@outlook.fr](mailto:mathisboche@outlook.fr)
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
