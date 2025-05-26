@@ -42,6 +42,4 @@ Aucune note ou information personnelle n’est stockée, transmise ou sauvegard�
 ## 👤 Auteur
 
 Développé par Mathis Boche
-Contact : [mathisboche@outlook.fr](mailto:mathisboche@outlook.fr)
-
----
+Contact : [mathisboche@outlook.fr](mailto:mathis@boche.co)
