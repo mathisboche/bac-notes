@@ -20,7 +20,7 @@ Saisie simple des notes, prise en compte automatique des coefficients officiels,
 
 ```bash
 git clone https://github.com/votre-utilisateur/nom-du-repo.git
-cd nom-du-repo
+cd bac-notes
 npm install
 npm start
 ```
