@@ -14,7 +14,7 @@ Saisie simple des notes, prise en compte automatique des coefficients officiels,
 
 * React
 * CSS custom (variables CSS)
-* Typo : [Inter](https://fonts.google.com/specimen/Inter)
+* Typo : [Inter](https://fonts.google.com/specimen/Inter) chargée via Google Fonts
 
 ## Utilisation
 
