@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
+export const calculateAverage = (values) => {
+  const validValues = values.filter(
+    (value) => value !== undefined && value !== null && value !== '' && !isNaN(value)
+  );
+  return validValues.length > 0
+    ? parseFloat(
+        (
+          validValues.reduce((sum, value) => sum + parseFloat(value), 0) /
+          validValues.length
+        ).toFixed(2)
+      )
+    : null;
+};
+
 function App() {
   const [formData, setFormData] = useState({});
   const [finalGrade, setFinalGrade] = useState(null);
@@ -55,10 +69,6 @@ function App() {
     }));
   };
 
-  const calculateAverage = (values) => {
-    const validValues = values.filter(value => value !== undefined && value !== null && value !== '' && !isNaN(value));
-    return validValues.length > 0 ? parseFloat((validValues.reduce((sum, value) => sum + parseFloat(value), 0) / validValues.length).toFixed(2)) : null;
-  };
 
   const calculateCurrentGrade = () => {
     let totalPoints = 0;
